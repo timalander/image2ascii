@@ -3,11 +3,12 @@
 
 import sys
 import os
-from PIL import image
+from PIL import Image
 
 
 def main():
    img = open_image()
+   img = convert_to_grayscale(img)
 
 def open_image():
     if len(sys.argv) == 1:
@@ -23,7 +24,16 @@ def open_image():
         print "Not a valid image file"
         sys.exit(1)
     else:
-        img = 
+        return Image.open(sys.argv[1])
+
+def convert_to_grayscale(img):
+    if len(img.split()) == 4:
+        # prevent IOError: cannot write mode RGBA as BMP
+        r, g, b, a = img.split()
+        img = Image.merge("RGB", (r, g, b))
+    img = img.convert("L")
+    img.save("out.bmp")
+
 
 
 if __name__ == "__main__":
