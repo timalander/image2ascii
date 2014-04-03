@@ -27,10 +27,14 @@ def open_image():
         return Image.open(sys.argv[1])
 
 def convert_to_grayscale(img):
+    pixel_data = img.load()
     if len(img.split()) == 4:
-        # prevent IOError: cannot write mode RGBA as BMP
-        r, g, b, a = img.split()
-        img = Image.merge("RGB", (r, g, b))
+        for y in xrange(img.size[1]): # For each row ...
+            for x in xrange(img.size[0]): # Iterate through each column ...
+                # Check if it's opaque
+                if pixel_data[x, y][3] < 255:
+                    # Replace the pixel data with the colour white
+                    pixel_data[x, y] = (255, 255, 255, 255)
     img = img.convert("L")
     img.save("out.bmp")
 
