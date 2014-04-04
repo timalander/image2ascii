@@ -9,6 +9,8 @@ from PIL import Image
 def main():
    img = open_image()
    img = convert_to_grayscale(img)
+   ascii_img_array = convert_to_ascii(img)
+
 
 def open_image():
     if len(sys.argv) == 1:
@@ -26,17 +28,32 @@ def open_image():
     else:
         return Image.open(sys.argv[1])
 
+
 def convert_to_grayscale(img):
     pixel_data = img.load()
-    if len(img.split()) == 4:
+    if len(img.split()) == 4: # Image has alpha
         for y in xrange(img.size[1]):
             for x in xrange(img.size[0]):
-                # Check if it's opaque
+                # Check if opaque
                 if pixel_data[x, y][3] < 255:
                     # Replace the pixel data with the color white
                     pixel_data[x, y] = (255, 255, 255, 255)
-    img = img.convert("L")
-    img.save("out.bmp")
+    return img.convert("L")
+
+def convert_to_ascii(img):
+    symbol_array = ['@', '$', 'B', '%', '8', '&', 'W', 'M', '#', '*' 'o', 'a',
+         'h', 'k', 'b', 'd', 'p', 'q', 'w', 'm', 'Z', 'O', '0', 'Q', 'L', 'C',
+         'J', 'U', 'Y', 'X', 'z', 'c', 'v', 'u', 'n', 'x', 'r', 'j', 'f', 't', 
+         '/', '|', '(', ')', '1', '{', ']', '?', '-', '+', '~', '>', 'i', '!', 
+         'l', 'I', ';', ':', ',', '"', '^', '`', '.']
+    pixel_data = img.load()
+    height = img.size[1]
+    width = img.size[0]
+    box_height = 5
+    box_width = 3
+
+    
+
 
 
 
