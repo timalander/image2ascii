@@ -10,6 +10,7 @@ def main():
    img = open_image()
    img = convert_to_grayscale(img)
    ascii_img_array = convert_to_ascii(img)
+   display(ascii_img_array)
 
 
 def open_image():
@@ -41,7 +42,7 @@ def convert_to_grayscale(img):
     return img.convert("L")
 
 def convert_to_ascii(img):
-    symbol_array = ['@', '$', 'B', '%', '8', '&', 'W', 'M', '#', '*' 'o', 'a',
+    symbol_array = ['@', '$', 'B', '%', '8', '&', 'W', 'M', '#', '*', 'o', 'a',
          'h', 'k', 'b', 'd', 'p', 'q', 'w', 'm', 'Z', 'O', '0', 'Q', 'L', 'C',
          'J', 'U', 'Y', 'X', 'z', 'c', 'v', 'u', 'n', 'x', 'r', 'j', 'f', 't', 
          '/', '|', '(', ')', '1', '{', ']', '?', '-', '+', '~', '>', 'i', '!', 
@@ -49,13 +50,29 @@ def convert_to_ascii(img):
     pixel_data = img.load()
     height = img.size[1]
     width = img.size[0]
-    box_height = 5
-    box_width = 3
+    block_height = 8
+    block_width = 4
+    ascii_img_array = []
+    for i in xrange(0, height, block_height):
+        row = []
+        if i+block_height <= height:
+            for j in xrange(0, width, block_width):
+                avg = 0;
+                if j+block_width <= width:
+                    for y in xrange(i, i+block_height):
+                        for x in xrange(j, j+block_width):
+                            avg += pixel_data[x, y]
+                    avg = avg/(block_height*block_width)
+                    row.append(symbol_array[int(round((avg/255.0)*(len(symbol_array)-1)))])
+            ascii_img_array.append(row)
+    return ascii_img_array
 
-    
-
-
-
+def display(ascii_img_array):
+    for x in xrange(len(ascii_img_array)):
+        row = ''
+        for y in xrange(len(ascii_img_array[0])):
+            row += ascii_img_array[x][y]
+        print row
 
 if __name__ == "__main__":
     main()
