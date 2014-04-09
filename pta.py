@@ -55,8 +55,8 @@ def convert_to_ascii(img):
     pixel_data = img.load()
     height = img.size[1]
     width = img.size[0]
-    block_height = 8
-    block_width = 4
+    block_height = 2
+    block_width = 1
     ascii_img_array = []
     for i in xrange(0, height, block_height):
         row = []
@@ -69,6 +69,35 @@ def convert_to_ascii(img):
                             avg += pixel_data[x, y]
                     avg = avg/(block_height*block_width)
                     row.append(symbol_array[int(round((avg/255.0)*(len(symbol_array)-1)))])
+            ascii_img_array.append(row)
+    return ascii_img_array
+
+def convert_to_reddit_ascii(img):
+    # symbol_array = ['@', '$', 'B', '%', '8', '&', 'W', 'M', '#', '*', 'o', 'a',
+    #      'h', 'k', 'b', 'd', 'p', 'q', 'w', 'm', 'Z', 'O', '0', 'Q', 'L', 'C',
+    #      'J', 'U', 'Y', 'X', 'z', 'c', 'v', 'u', 'n', 'x', 'r', 'j', 'f', 't',
+    #      '/', '|', '(', ')', '1', '{', ']', '?', '-', '+', '~', '>', 'i', '!',
+    #      'l', 'I', ';', ':', ',', '"', '^', '`', '.', ' ']
+    symbol_array = ['@', '%', '#', '*', '+', '=', '-', ':', '.']
+    pixel_data = img.load()
+    height = img.size[1]
+    width = img.size[0]
+    block_height = 2
+    block_width = 1
+    ascii_img_array = []
+    for i in xrange(0, height, block_height):
+        row = []
+        row.append('`')
+        if i+block_height <= height:
+            for j in xrange(0, width, block_width):
+                avg = 0;
+                if j+block_width <= width:
+                    for y in xrange(i, i+block_height):
+                        for x in xrange(j, j+block_width):
+                            avg += pixel_data[x, y]
+                    avg = avg/(block_height*block_width)
+                    row.append(symbol_array[int(round((avg/255.0)*(len(symbol_array)-1)))])
+            row.append('`  ')
             ascii_img_array.append(row)
     return ascii_img_array
 
