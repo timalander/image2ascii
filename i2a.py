@@ -7,29 +7,25 @@ import argparse
 from PIL import Image
 import PIL.ImageOps
 
-def main():
-    img = open_image()
+def main(filename, i, r, s):
+    global is_invert, is_reddit, scale
+    is_invert = i
+    is_reddit = r
+    scale = s
+
+    img = open_image(filename)
     img = convert_to_grayscale(img)
     ascii_img_array = convert_to_ascii(img)
     display(ascii_img_array)
 
 
-def open_image():
-    parser = argparse.ArgumentParser(description='Convert images to ASCII', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('-i', '--invert', action="store_true", help="Invert image colors" , dest="is_invert")
-    parser.add_argument('-r', '--reddit', action="store_true", default=False, help="Output in reddit comment formatting" , dest="is_reddit")
-    parser.add_argument('file', action="store", type=str, help="File to be converted")
-    parser.add_argument('--scale', type=int, help="Set sampling scale factor" , dest="scale", default=1, metavar='INT')
-    args = parser.parse_args()
-    global is_reddit, scale
-    is_reddit = args.is_reddit
-    scale = args.scale
-    root,ext = os.path.splitext(args.file)
+def open_image(filename):
+    root,ext = os.path.splitext(filename)
     if ext.lower() not in ['.jpg', '.jpeg', '.png', '.bmp']:
         sys.exit("Not a valid image file")
     else:
-        image = Image.open(args.file)
-        if args.is_invert:
+        image = Image.open(filename)
+        if is_invert:
             image = PIL.ImageOps.invert(image)
         return image
 
@@ -81,4 +77,10 @@ def display(ascii_img_array):
         print row
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description='Convert images to ASCII', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('-i', '--invert', action="store_true", help="Invert image colors" , dest="is_invert")
+    parser.add_argument('-r', '--reddit', action="store_true", default=False, help="Output in reddit comment formatting" , dest="is_reddit")
+    parser.add_argument('file', action="store", type=str, help="File to be converted")
+    parser.add_argument('--scale', type=int, help="Set sampling scale factor" , dest="scale", default=1, metavar='INT')
+    args = parser.parse_args()
+    main(args.file, args.is_invert, args.is_reddit, args.scale)
