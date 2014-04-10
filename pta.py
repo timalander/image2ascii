@@ -17,9 +17,9 @@ def open_image():
     parser = argparse.ArgumentParser(description='Convert images to ASCII')
     parser.add_argument('-i', action="store_true", help="Invert image colors" , dest="is_invert")
     parser.add_argument('-r', action="store_true", default=False, help="Output in reddit comment formatting" , dest="is_reddit")
-    parser.add_argument('filename', action="store", type=str)
+    parser.add_argument('filename', action="store", type=str, help="File to be converted")
     args = parser.parse_args()
-    global is_reddit 
+    global is_reddit
     is_reddit = args.is_reddit
     root,ext = os.path.splitext(args.filename)
     if ext.lower() not in ['.jpg', '.jpeg', '.png', '.bmp']:
@@ -27,9 +27,8 @@ def open_image():
     else:
         image = Image.open(args.filename)
         if args.is_invert:
-            return PIL.ImageOps.invert(image)
-        else:
-            return image
+            image = PIL.ImageOps.invert(image)
+        return image
 
 def convert_to_grayscale(img):
     pixel_data = img.load()
