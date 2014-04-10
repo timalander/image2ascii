@@ -13,22 +13,26 @@ def main():
     ascii_img_array = convert_to_ascii(img)
     display(ascii_img_array)
 
+
 def open_image():
     parser = argparse.ArgumentParser(description='Convert images to ASCII')
-    parser.add_argument('-i', action="store_true", help="Invert image colors" , dest="is_invert")
-    parser.add_argument('-r', action="store_true", default=False, help="Output in reddit comment formatting" , dest="is_reddit")
-    parser.add_argument('filename', action="store", type=str, help="File to be converted")
+    parser.add_argument('-i', '--invert', action="store_true", help="Invert image colors" , dest="is_invert")
+    parser.add_argument('-r', '--reddit', action="store_true", default=False, help="Output in reddit comment formatting" , dest="is_reddit")
+    parser.add_argument('file', action="store", type=str, help="File to be converted")
+    parser.add_argument('--scale', type=int, help="Set sampling scale factor (Default: 1)" , dest="scale", default=1, metavar='INT')
     args = parser.parse_args()
-    global is_reddit
+    global is_reddit, scale
     is_reddit = args.is_reddit
-    root,ext = os.path.splitext(args.filename)
+    scale = args.scale
+    root,ext = os.path.splitext(args.file)
     if ext.lower() not in ['.jpg', '.jpeg', '.png', '.bmp']:
         sys.exit("Not a valid image file")
     else:
-        image = Image.open(args.filename)
+        image = Image.open(args.file)
         if args.is_invert:
             image = PIL.ImageOps.invert(image)
         return image
+
 
 def convert_to_grayscale(img):
     pixel_data = img.load()
@@ -37,7 +41,7 @@ def convert_to_grayscale(img):
             for x in xrange(img.size[0]):
                 # Check if opaque
                 if pixel_data[x, y][3] < 255:
-                    # Replace the pixel data with the color white
+                    # Replace the pixel data with white
                     pixel_data[x, y] = (255, 255, 255, 255)
     return img.convert("L")
 
@@ -52,8 +56,8 @@ def convert_to_ascii(img):
     pixel_data = img.load()
     height = img.size[1]
     width = img.size[0]
-    block_height = 2
-    block_width = 1
+    block_height = scale*2
+    block_width = scale
     ascii_img_array = []
     for i in xrange(0, height, block_height):
         row = []
