@@ -15,11 +15,11 @@ def main():
 
 
 def open_image():
-    parser = argparse.ArgumentParser(description='Convert images to ASCII')
+    parser = argparse.ArgumentParser(description='Convert images to ASCII', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-i', '--invert', action="store_true", help="Invert image colors" , dest="is_invert")
     parser.add_argument('-r', '--reddit', action="store_true", default=False, help="Output in reddit comment formatting" , dest="is_reddit")
     parser.add_argument('file', action="store", type=str, help="File to be converted")
-    parser.add_argument('--scale', type=int, help="Set sampling scale factor (Default: 1)" , dest="scale", default=1, metavar='INT')
+    parser.add_argument('--scale', type=int, help="Set sampling scale factor" , dest="scale", default=1, metavar='INT')
     args = parser.parse_args()
     global is_reddit, scale
     is_reddit = args.is_reddit
@@ -47,11 +47,6 @@ def convert_to_grayscale(img):
 
 
 def convert_to_ascii(img):
-    # symbol_array = ['@', '$', 'B', '%', '8', '&', 'W', 'M', '#', '*', 'o', 'a',
-    #      'h', 'k', 'b', 'd', 'p', 'q', 'w', 'm', 'Z', 'O', '0', 'Q', 'L', 'C',
-    #      'J', 'U', 'Y', 'X', 'z', 'c', 'v', 'u', 'n', 'x', 'r', 'j', 'f', 't',
-    #      '/', '|', '(', ')', '1', '{', ']', '?', '-', '+', '~', '>', 'i', '!',
-    #      'l', 'I', ';', ':', ',', '"', '^', '`', '.', ' ']
     symbol_array = ['@', '%', '#', '*', '+', '=', '-', ':', '.']
     pixel_data = img.load()
     height = img.size[1]
