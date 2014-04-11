@@ -2,33 +2,24 @@
 #coding: utf-8
 
 import sys
-import os
 import argparse
 from PIL import Image
-import PIL.ImageOps
+from PIL import ImageOps
 
-def main(filename, i, r, s):
-    global is_invert, is_reddit, scale
-    is_invert = i
-    is_reddit = r
-    scale = s
-
-    img = open_image(filename)
+def convert(filename, is_invert, is_reddit, scale):
+    img = open_image(filename, is_invert)
     img = convert_to_grayscale(img)
-    ascii_img_array = convert_to_ascii(img)
-    display(ascii_img_array)
+    ascii_img_array = convert_to_ascii(img, scale)
+    display(ascii_img_array, is_reddit)
 
-
-def open_image(filename):
-    root,ext = os.path.splitext(filename)
-    if ext.lower() not in ['.jpg', '.jpeg', '.png', '.bmp']:
-        sys.exit("Not a valid image file")
-    else:
+def open_image(filename, is_invert):
+    try:
         image = Image.open(filename)
-        if is_invert:
-            image = PIL.ImageOps.invert(image)
-        return image
-
+    except:
+        sys.exit("Could not read image file")
+    if is_invert:
+        image = ImageOps.invert(image)
+    return image
 
 def convert_to_grayscale(img):
     pixel_data = img.load()
@@ -41,8 +32,7 @@ def convert_to_grayscale(img):
                     pixel_data[x, y] = (255, 255, 255, 255)
     return img.convert("L")
 
-
-def convert_to_ascii(img):
+def convert_to_ascii(img, scale):
     symbol_array = ['@', '%', '#', '*', '+', '=', '-', ':', '.']
     pixel_data = img.load()
     height = img.size[1]
@@ -52,8 +42,6 @@ def convert_to_ascii(img):
     ascii_img_array = []
     for i in xrange(0, height, block_height):
         row = []
-        if is_reddit:
-            row.append('`')
         if i+block_height <= height:
             for j in xrange(0, width, block_width):
                 avg = 0;
@@ -63,24 +51,25 @@ def convert_to_ascii(img):
                             avg += pixel_data[x, y]
                     avg = avg/(block_height*block_width)
                     row.append(symbol_array[int(round((avg/255.0)*(len(symbol_array)-1)))])
-            if is_reddit:
-                row.append('`  ')
             ascii_img_array.append(row)
     return ascii_img_array
 
-
-def display(ascii_img_array):
+def display(ascii_img_array, is_reddit):
     for x in xrange(len(ascii_img_array)):
         row = ''
+        if is_reddit:
+            row = '`'
         for y in xrange(len(ascii_img_array[0])):
             row += ascii_img_array[x][y]
+        if is_reddit:
+            row += '`  '
         print row
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Convert images to ASCII', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-i', '--invert', action="store_true", help="Invert image colors" , dest="is_invert")
-    parser.add_argument('-r', '--reddit', action="store_true", default=False, help="Output in reddit comment formatting" , dest="is_reddit")
-    parser.add_argument('file', action="store", type=str, help="File to be converted")
-    parser.add_argument('--scale', type=int, help="Set sampling scale factor" , dest="scale", default=1, metavar='INT')
+    parser.add_argument('-r', '--reddit', action="store_true", default=False, help="Output in reddit comment format" , dest="is_reddit")
+    parser.add_argument('filename', action="store", type=str, help="File to be converted")
+    parser.add_argument('--downscale', type=int, help="Set downscaling factor" , default=1, metavar='INT')
     args = parser.parse_args()
-    main(args.file, args.is_invert, args.is_reddit, args.scale)
+    convert(args.filename, args.is_invert, args.is_reddit, args.downscale)
