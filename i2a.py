@@ -3,14 +3,23 @@
 
 import sys
 import argparse
-from PIL import Image
-from PIL import ImageOps
+from PIL import Image, ImageOps, ImageFont, ImageDraw
 
 def convert(filename, is_invert, is_reddit, scale):
     img = open_image(filename, is_invert)
     img = convert_to_grayscale(img)
     ascii_img_array = convert_to_ascii(img, scale)
     display(ascii_img_array, is_reddit)
+    #symbol_array = ['@', '%', '#', '*', '+', '=', '-', ':', '.']
+    #font = ImageFont.truetype('DroidSansMono.ttf')
+    #img = Image.new("L", (len(ascii_img_array[0])*6,len(ascii_img_array)*2) *11, "white")
+    #draw = ImageDraw.Draw(img)
+    #draw.text((0, 0), ascii_img_array[0][0], font=font)
+    #for i in xrange(len(ascii_img_array)):
+    #    for j in xrange(len(ascii_img_array[0])):
+    #        draw.text((j, i * 2), ascii_img_array[i][j], font=font)
+    #        draw.text((j, (i * 2) + 1), ascii_img_array[i][j], font=font)
+    #img.save('hey.png')
 
 def open_image(filename, is_invert):
     try:
